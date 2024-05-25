@@ -1,7 +1,25 @@
 <?php
 session_start();
 
-$currentPage = strtolower(basename($_SERVER['PHP_SELF']));
+
+function parseUrl_header() {
+    if (isset($_GET['url'])) {
+        $url = $_GET['url'];
+        $url = trim($url, '/');
+        $urlSegments = explode('/', $url);
+        return $urlSegments;
+    }
+    return [];
+
+
+}
+$parsUrl=parseUrl_header();
+$currentPage ="home";
+if(count($parsUrl)>0){
+    $currentPage = $parsUrl[0];
+}
+
+
 
 $_UserIsLogin = false;
 if (isset($_SESSION['token'])) {
@@ -24,7 +42,7 @@ if (isset($_SESSION['token'])) {
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="index.php">DEAL
+        <a class="navbar-brand" href="index.php?url=home">DEAL
 
             <?php if ($_UserIsLogin): ?>
                 for Users
@@ -36,30 +54,30 @@ if (isset($_SESSION['token'])) {
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item <?php if ($currentPage == 'index.php')
+                <li class="nav-item <?php if ($currentPage == 'home')
                     echo 'active'; ?>">
-                    <a class="nav-link" href="home">MAIN PAGE<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="index.php?url=home">MAIN PAGE<span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item <?php if ($currentPage == 'product.php')
+                <li class="nav-item <?php if ($currentPage == 'product')
                     echo 'active'; ?> ">
-                    <a class="nav-link" href="product">PRODUCTS</a>
+                    <a class="nav-link" href="index.php?url=product">PRODUCTS</a>
                 </li>
-                <li class="nav-item <?php if ($currentPage == 'contact.php')
+                <li class="nav-item <?php if ($currentPage == 'contact')
                     echo 'active'; ?> ">
-                    <a class="nav-link" href="contact">CONTACT</a>
+                    <a class="nav-link" href="index.php?url=contact">CONTACT</a>
                 </li>
-                <li class="nav-item <?php if ($currentPage == 'login.php')
+                <li class="nav-item <?php if ($currentPage == 'login')
                     echo 'active'; ?> ">
 
                     <?php if ($_UserIsLogin): ?>
 
-                        <a class="nav-link" href="AdminPanel/Logout.php?logout=True">
+                        <a class="nav-link" id ="logout_user" >
                             <b> DEAR <?php echo $_SESSION['username'] ?> </b>
                             LOGOUT
                         </a>
 
                     <?php else: ?>
-                        <a class="nav-link" href="login">
+                        <a class="nav-link" href="index.php?url=login">
                             LOGIN
                         </a>
                     <?php endif; ?>
@@ -67,3 +85,44 @@ if (isset($_SESSION['token'])) {
             </ul>
         </div>
     </nav>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        
+
+        $("#logout_user").click(function (event) {
+            event.preventDefault();
+            
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: 'http://dealer.rf.gd/index.php?url=api',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "method": "logout"
+                    
+                }),
+                success: function (response) {
+                    debugger;
+                    if (response.success) {
+                        window.location.href = "index.php?url=home";
+
+                    } else {
+                        window.alert("Check the system!");
+                    }
+                },
+                error: function (response) {
+                    debugger;
+                    console.log(response);
+                }
+            });
+        
+        });
+      
+        
+    
+    
+    
+    });
+</script>

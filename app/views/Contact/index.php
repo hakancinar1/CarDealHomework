@@ -97,11 +97,14 @@
             <?php endif; ?>
 
             var message = $('#message').val();
-            var method = "CREATE_001";
+            var method = "createContact";
+           
             $.ajax({
                 type: 'POST',
-                url: 'api/contactapi.php',
-                data: { username: username, message: message, method: method },
+                url: 'http://dealer.rf.gd/index.php?url=api',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({ "username": username, "message": message, "method": method }),
                 success: function (response) {
                     if (response.success) {
                         $('#response').html('<div class="alert alert-succes">' + response.message + ' </div>');
@@ -124,8 +127,10 @@
             <?php if ($_UserIsLogin): ?>
                 $.ajax({
                     type: 'POST',
-                    url: 'api/contactapi.php',
-                    data: { method: "GETLIST" },
+                    url: 'http://dealer.rf.gd/index.php?url=api',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "method": "getContactList" }),
                     success: function (response) {
                         debugger;
                         $('#messageContainer').empty();
@@ -136,8 +141,8 @@
                                 debugger;
                                 var html = '<div class="card message-card">';
                                 html += '<div class="card-body">';
-                                html += '<div class="guest-name">' + message[1] + '</div>';
-                                html += '<div class="guest-message">' + message[2] + '</div>';
+                                html += '<div class="guest-name">' + message.ContactName+ '</div>';
+                                html += '<div class="guest-message">' + message.ContactMessage  + '</div>';
                                 html += '</div></div>';
                                 $('#messageContainer').append(html);
                             });

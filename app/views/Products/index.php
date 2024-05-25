@@ -79,7 +79,7 @@
 
             debugger;
             $.ajax({
-                url: 'api/productapi.php',
+                url: 'http://dealer.rf.gd/index.php?url=api',
                 type: 'POST',
                 data: formData,
                 async: false,

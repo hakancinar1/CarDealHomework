@@ -56,11 +56,13 @@ if ($_UserIsLogin) {
                 debugger;
                 $.ajax({
                     type: 'POST',
-                    url: 'api/registerapi.php',
-                    data: { username: username, password: password },
+                    url: 'http://dealer.rf.gd/index.php?url=api',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "username": username, "password": password ,"method": "register" }),
                     success: function (response) {
                         if (response.success) {
-                            $('#response').html('<div class="alert alert-succes">' + response.message + ' . if you want go to <a href="login.php">LOGIN</a> </div>');
+                            $('#response').html('<div class="alert alert-succes">' + response.message + ' . if you want go to <a href="index.php?url=login">LOGIN</a> </div>');
                         } else {
                             $('#response').html('<div class="alert alert-danger">' + response.message + '</div>');
                         }
