@@ -1,4 +1,6 @@
 <?php
+
+
 class App {
     protected $controller = 'HomeController';
     protected $method = 'index';
@@ -6,9 +8,8 @@ class App {
 
     public function __construct() {
         $url = $this->parseUrl();
-        
+
         if (isset($url[0]) && file_exists('app/controllers/' . ucwords($url[0]) . 'Controller.php')) {
-            
             $this->controller = ucwords($url[0]) . 'Controller';
             unset($url[0]);
         }
@@ -27,20 +28,15 @@ class App {
     }
 
     public function parseUrl() {
-        if (isset($_SERVER['REQUEST_URI'])) {
-            $url = $_SERVER['REQUEST_URI'];
-            $url = explode('?', $url)[0];
+        if (isset($_GET['url'])) {
+            $url = $_GET['url'];
             $url = trim($url, '/');
             $urlSegments = explode('/', $url);
-
-            // İlk segmentin projenin kök dizini olduğunu varsayarak
-            if ($urlSegments[0] == 'deal_website') {
-                array_shift($urlSegments);
-            }
-
             return $urlSegments;
         }
         return [];
     }
 }
+
+
 ?>

@@ -11,11 +11,30 @@ class ApiController  {
             exit;
         }
         $_CrudServices = CrudServices::getInstance();   
+
+        // Hata ayıklama için gelen veriyi kontrol edin
+        $rawData = file_get_contents('php://input');
+        error_log("Raw Data: " . $rawData);
+        
+        $data = json_decode($rawData, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log("JSON Decode Error: " . json_last_error_msg());
+            $response = array(
+                'success' => false,
+                'message' => 'Geçersiz JSON verisi.'
+            );
+            header('Content-Type: application/json');
+            echo json_encode($response);
+            exit;
+        }
+        
+        $_CrudServices = CrudServices::getInstance();   
         
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // İstek işlemlerini al
-            $data = json_decode(file_get_contents('php://input'), true);
+            
             $method = $data['method'] ?? '';
             
             // İstenen işlemi gerçekleştir
@@ -25,6 +44,11 @@ class ApiController  {
                     $password = $data['password'];
                     $checkUser = $_CrudServices->checkUser($username, $password);
                     if ($checkUser) {
+                        $token = $this->generateToken($username);
+                        session_start();
+                        $_SESSION['token'] = $token;
+                        $_SESSION['username'] = $username;
+
                         $response = array(
                             'success' => true,
                             'message' => 'Giriş başarılı! Hoş geldiniz, ' . $username
@@ -36,6 +60,18 @@ class ApiController  {
                         );
                     }
                     break;
+
+                case 'logout':
+                    $this->Logout();
+                    $response = array(
+                        'success' => true,
+                        'message' => 'Logout success'
+                    );
+                   
+                    
+                    
+                    break;
+                        
                 case 'register':
                     $username = $data['username'];
                     $password = $data['password'];
@@ -89,7 +125,7 @@ class ApiController  {
                 default:
                     $response = array(
                         'success' => null,
-                        'message' => 'Geçersiz yöntem!='.$data
+                        'message' => $data
                     );
                     break;
             }
@@ -103,6 +139,57 @@ class ApiController  {
         header('Content-Type: application/json');
         echo json_encode($response);
         
+    }
+    public  function generateToken($username) {
+        
+        $key = "burasiAnahatar055635";
+
+        $tokenData = array(
+            "username" => $username,
+            "timestamp" => time() 
+        );
+    
+    
+        $token = $this->jwt_encode_encode($tokenData, $key);
+    
+        return $token;
+    }
+    public function  jwt_encode_encode($data, $key)
+    {
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
+        $payload = json_encode($data);
+
+        $base64UrlHeader = $this->base64UrlEncode($header);
+        $base64UrlPayload = $this->base64UrlEncode($payload);
+
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $key, true);
+        $base64UrlSignature = $this->base64UrlEncode($signature);
+
+        $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
+
+        return $jwt;
+    }
+    public function  base64UrlEncode($data)
+    {
+        $base64 = base64_encode($data);
+        if ($base64 === false) {
+            return false;
+        }
+        $base64Url = strtr($base64, '+/', '-_');
+        return rtrim($base64Url, '=');
+    }
+    public function Logout() {
+
+        session_start();
+
+        $_SESSION = array();
+
+        session_destroy();
+        
+        
+
+
+
     }
 }
 ?>

@@ -4,5 +4,6 @@ class ContactController extends Controller {
         
         $this->view('contact/index');
     }
+    
 }
 ?>
