@@ -38,15 +38,15 @@ if (isset($_SESSION['token'])) {
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item <?php if ($currentPage == 'index.php')
                     echo 'active'; ?>">
-                    <a class="nav-link" href="index.php">MAIN PAGE<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="home">MAIN PAGE<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item <?php if ($currentPage == 'product.php')
                     echo 'active'; ?> ">
-                    <a class="nav-link" href="product.php">PRODUCTS</a>
+                    <a class="nav-link" href="product">PRODUCTS</a>
                 </li>
                 <li class="nav-item <?php if ($currentPage == 'contact.php')
                     echo 'active'; ?> ">
-                    <a class="nav-link" href="contact.php">CONTACT</a>
+                    <a class="nav-link" href="contact">CONTACT</a>
                 </li>
                 <li class="nav-item <?php if ($currentPage == 'login.php')
                     echo 'active'; ?> ">
@@ -59,7 +59,7 @@ if (isset($_SESSION['token'])) {
                         </a>
 
                     <?php else: ?>
-                        <a class="nav-link" href="Login.php">
+                        <a class="nav-link" href="login">
                             LOGIN
                         </a>
                     <?php endif; ?>
